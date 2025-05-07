@@ -88,16 +88,37 @@
     }
 
     /* Media queries for responsiveness */
+    @media (max-width: 1024px) {
+      .game-container {
+        grid-template-columns: repeat(4, 90px);
+        grid-template-rows: repeat(4, 90px);
+        gap: 12px;
+        padding: 15px;
+      }
+      .card {
+        width: 90px;
+        height: 90px;
+      }
+      h2 {
+        font-size: 1.8rem;
+        top: 15px;
+      }
+    }
+
     @media (max-width: 768px) {
       .game-container {
         grid-template-columns: repeat(4, 80px);
         grid-template-rows: repeat(4, 80px);
         gap: 10px;
-        padding: 15px;
+        padding: 10px;
       }
       .card {
         width: 80px;
         height: 80px;
+      }
+      h2 {
+        font-size: 1.5rem;
+        top: 10px;
       }
     }
 
@@ -113,13 +134,35 @@
         height: 60px;
       }
       h2 {
-        font-size: 1.5rem;
-        top: 10px;
+        font-size: 1.3rem;
+        top: 5px;
       }
       .watermark {
         font-size: 1rem;
         bottom: 10px;
         right: 10px;
+      }
+    }
+
+    @media (max-width: 320px) {
+      .game-container {
+        grid-template-columns: repeat(4, 50px);
+        grid-template-rows: repeat(4, 50px);
+        gap: 5px;
+        padding: 8px;
+      }
+      .card {
+        width: 50px;
+        height: 50px;
+      }
+      h2 {
+        font-size: 1rem;
+        top: 2px;
+      }
+      .watermark {
+        font-size: 0.9rem;
+        bottom: 5px;
+        right: 5px;
       }
     }
   </style>
