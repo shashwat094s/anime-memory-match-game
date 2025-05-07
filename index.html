@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Flip Game</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(120deg, #1e3c72, #2a5298);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .game-container {
+      display: grid;
+      grid-template-columns: repeat(4, 100px);
+      grid-template-rows: repeat(4, 100px);
+      gap: 15px;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    .card {
+      width: 100px;
+      height: 100px;
+      perspective: 1000px;
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+      cursor: pointer;
+    }
+    .card.flipped .card-inner {
+      transform: rotateY(180deg);
+    }
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 8px;
+    }
+    .card-front {
+      background: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: rotateY(180deg);
+    }
+    .card-front img {
+      width: 80%;
+      height: 80%;
+      object-fit: contain;
+    }
+    .card-back {
+  background: url('logo.png') no-repeat center center;
+  background-size: cover;
+  transform: rotateY(0deg);
+}
+
+    h2 {
+      position: absolute;
+      top: 20px;
+      color: #fff;
+      font-size: 2rem;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    }
+    .watermark {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      font-size: 1.5rem;
+      color: rgba(255, 255, 255, 0.5);
+      font-family: 'Segoe UI', sans-serif;
+      text-align: center;
+    }
+    .watermark::before {
+      content: "";
+    }
+  </style>
+</head>
+<body>
+  <h2>Anime Memory Match</h2>
+  <div class="game-container" id="game"></div>
+  <div class="watermark">© Shashwat Pandey 2025</div>
+
+  <script>
+    const animeLogos = [
+      'https://c3.klipartz.com/pngpicture/804/310/sticker-png-render-chibi-naruto-naruto-shipudden-illustration-thumbnail.png', // Naruto
+      'https://toppng.com/uploads/preview/vegeta-et-bulma-goku-dragon-ball-z-exorciste-bleu-dragon-ball-super-vegeta-chibi-115629128927uwt7ngno5.png', // Dragon Ball
+      'https://i.pinimg.com/originals/b2/e7/0b/b2e70b99876c518b316b628350ef7106.jpg', // One Piece
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhxeNof5k-IoZJu1hcrtyrK-E5_BP5ENKPwA&s', // Bleach
+      'https://toppng.com/uploads/preview/vegeta-et-bulma-goku-dragon-ball-z-exorciste-bleu-dragon-ball-super-vegeta-chibi-115629128927uwt7ngno5.png', // Dragon Ball
+      'https://i.pinimg.com/originals/b2/e7/0b/b2e70b99876c518b316b628350ef7106.jpg', // One Piece
+      'https://c3.klipartz.com/pngpicture/804/310/sticker-png-render-chibi-naruto-naruto-shipudden-illustration-thumbnail.png', // Naruto
+      'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQhxeNof5k-IoZJu1hcrtyrK-E5_BP5ENKPwA&s' // Bleach
+    ];
+
+    let cards = [...animeLogos, ...animeLogos];
+    let flippedCards = [];
+    let matched = [];
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function createCard(imageUrl) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const inner = document.createElement('div');
+      inner.className = 'card-inner';
+
+      const front = document.createElement('div');
+      front.className = 'card-front';
+      const img = document.createElement('img');
+      img.src = imageUrl;
+      img.alt = "Anime Logo";
+      front.appendChild(img);
+
+      const back = document.createElement('div');
+      back.className = 'card-back';
+
+      inner.appendChild(front);
+      inner.appendChild(back);
+      card.appendChild(inner);
+
+      card.addEventListener('click', () => {
+        if (flippedCards.length < 2 && !card.classList.contains('flipped') && !matched.includes(card)) {
+          card.classList.add('flipped');
+          flippedCards.push({ card, imageUrl });
+
+          if (flippedCards.length === 2) {
+            setTimeout(checkMatch, 700);
+          }
+        }
+      });
+
+      return card;
+    }
+
+    function checkMatch() {
+      const [first, second] = flippedCards;
+      if (first.imageUrl === second.imageUrl) {
+        matched.push(first.card, second.card);
+      } else {
+        first.card.classList.remove('flipped');
+        second.card.classList.remove('flipped');
+      }
+      flippedCards = [];
+    }
+
+    function initGame() {
+      shuffle(cards);
+      const game = document.getElementById('game');
+      game.innerHTML = '';
+      cards.forEach(url => {
+        game.appendChild(createCard(url));
+      });
+    }
+
+    initGame();
+  </script>
+</body>
+</html>
